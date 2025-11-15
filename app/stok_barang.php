@@ -1,254 +1,285 @@
 <?php
 include '../conf/config.php';
 
-// Tambah data
+// MODE EDIT
+$editMode = false;
+$editData = null;
+
+if (isset($_GET['edit'])) {
+    $id = $_GET['edit'];
+    $q = mysqli_query($koneksi, "SELECT * FROM stok_barang WHERE id_barang='$id'");
+    $editData = mysqli_fetch_assoc($q);
+    if ($editData) {
+        $editMode = true;
+    }
+}
+
+// SIMPAN DATA BARU
 if (isset($_POST['simpan'])) {
     $nama_barang = $_POST['nama_barang'];
     $harga = $_POST['harga'];
     $stok = $_POST['stok'];
+    $stok_ukuran_s = $_POST['stok_ukuran_s'];
+    $stok_ukuran_m = $_POST['stok_ukuran_m'];
+    $stok_ukuran_l = $_POST['stok_ukuran_l'];
+    $stok_ukuran_xl = $_POST['stok_ukuran_xl'];
 
-    // Simpan ke database
-    $query = mysqli_query($koneksi, "INSERT INTO stok_barang (nama_barang, harga, stok) VALUES ('$nama_barang', '$harga', '$stok')");
+    mysqli_query($koneksi, 
+        "INSERT INTO stok_barang (nama_barang, harga, stok, stok_ukuran_s, stok_ukuran_m, stok_ukuran_l, stok_ukuran_xl)
+        VALUES ('$nama_barang','$harga','$stok','$stok_ukuran_s','$stok_ukuran_m','$stok_ukuran_l','$stok_ukuran_xl')"
+    );
 
-    if ($query) {
-        echo "<script>alert('Data berhasil disimpan!');window.location='stok_barang.php';</script>";
-    } else {
-        echo "<script>alert('Gagal menyimpan data!');</script>";
-    }
+    echo "<script>alert('Data berhasil disimpan!');window.location='stok_barang.php';</script>";
+}
+
+// UPDATE DATA (EDIT)
+if (isset($_POST['update'])) {
+
+    mysqli_query($koneksi,
+        "UPDATE stok_barang SET 
+            nama_barang='$_POST[nama_barang]',
+            harga='$_POST[harga]',
+            stok='$_POST[stok]',
+            stok_ukuran_s='$_POST[stok_ukuran_s]',
+            stok_ukuran_m='$_POST[stok_ukuran_m]',
+            stok_ukuran_l='$_POST[stok_ukuran_l]',
+            stok_ukuran_xl='$_POST[stok_ukuran_xl]'
+        WHERE id_barang='$_POST[id_barang]'"
+    );
+
+    echo "<script>alert('Data berhasil diupdate!');window.location='stok_barang.php';</script>";
+}
+
+// HAPUS DATA
+if (isset($_GET['hapus'])) {
+    mysqli_query($koneksi, "DELETE FROM stok_barang WHERE id_barang='$_GET[hapus]'");
+    echo "<script>alert('Data berhasil dihapus!');window.location='stok_barang.php';</script>";
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <title>Data Stok Barang</title>
-</head>
-<body>
-    <div class="navbar">📦 Data Stok Barang</div>
-
-    <!-- Tombol Kembali ke Dashboard -->
-<a href="index.php" class="back-btn">⬅️ Kembali ke Dashboard</a>
+<meta charset="UTF-8">
+<title>Data Stok Barang</title>
 
 <style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f3f4f6;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    background: #1e40c5;
+    color: #fff;
+    padding: 15px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.container {
+    width: 90%;
+    margin: auto;
+    padding-top: 20px;
+}
+
+/* Tombol Kembali */
 .back-btn {
     display: inline-block;
-    background-color: #1e40c5; /* warna biru sama seperti tabel */
-    color: white;               /* tulisan putih */
-    padding: 10px 20px;         /* jarak dalam tombol */
-    margin: 20px 0;             /* jarak atas-bawah */
-    border-radius: 6px;         /* sudut membulat */
-    text-decoration: none;      /* hapus garis bawah */
-    font-weight: 500;           /* tulisan agak tebal */
+    background-color: #1e40c5;
+    color: white;
+    padding: 10px 20px;
+    margin: 15px 0;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+}
+.back-btn:hover {
+    background-color: #1532a2;
 }
 
-.back-btn:hover {
-    background-color: #1532a2;  /* warna biru lebih gelap saat hover */
+/* BOX FORM */
+.form-box {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    box-shadow: 0 0 7px rgba(0,0,0,0.15);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.form-box h2 {
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+form label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+}
+
+form input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+form button {
+    margin-top: 15px;
+    background: #1e40c5;
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+}
+form button:hover {
+    background: #1532a2;
+}
+
+/* Tabel fix tidak melebar */
+table {
+    width: auto;
+    max-width: 1100px;
+    margin: auto;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 0 7px rgba(0,0,0,0.15);
+    border: 1px solid #ccc;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    background: #1e40c5;
+    color: white;
+    white-space: nowrap;
+}
+
+/* Kolom ukuran kecil */
+th.size, td.size {
+    width: 40px;
+    max-width: 40px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Aksi */
+.aksi a {
+    margin: 0 5px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.edit {
+    color: #1e90ff;
+}
+
+.hapus {
+    color: red;
 }
 </style>
 
+</head>
+<body>
 
-    <div class="container">
-        <!-- Form tambah -->
-        <div class="form-box">
-            <h2>Tambah Data Stok</h2>
-            <form method="post">
-                <label>Nama Barang</label>
-                <input type="text" name="nama_barang" placeholder="Masukkan nama barang" required>
+<div class="navbar">📦 Data Stok Barang</div>
 
-                <label>Harga</label>
-                <input type="number" name="harga" placeholder="Masukkan harga" required>
+<a href="index.php" class="back-btn">⬅️ Kembali ke Dashboard</a>
 
-                <label>Stok</label>
-                <input type="number" name="stok" placeholder="Masukkan jumlah stok" required>
+<div class="container">
 
-                <button type="submit" name="simpan">Simpan</button>
-            </form>
-        </div>
+    <!-- FORM DI ATAS -->
+    <div class="form-box">
+        <h2><?= $editMode ? "Edit Data Stok" : "Tambah Data Stok" ?></h2>
 
-        <!-- Tabel data -->
-        <div style="flex:1;">
-            <h2>📋 Daftar Stok Barang</h2>
-            <table>
-                <tr>
-                    <th>No</th>
-                    <th>Nama Barang</th>
-                    <th>Harga</th>
-                    <th>Stok</th>
-                    <th>Aksi</th>
-                </tr>
-                <?php
-                $no = 1;
-                $data = mysqli_query($koneksi, "SELECT * FROM stok_barang ORDER BY id_barang DESC");
-                while ($d = mysqli_fetch_array($data)) {
-                ?>
-                <tr>
-                    <td><?= $no++; ?></td>
-                    <td><?= htmlspecialchars($d['nama_barang']); ?></td>
-                    <td>Rp<?= number_format($d['harga']); ?></td>
-                    <td><?= $d['stok']; ?></td>
-                    <td>
-                        <a href="hapus_stok.php?id=<?= $d['id_barang']; ?>" class="hapus" onclick="return confirm('Hapus data ini?')">Hapus</a>
-                    </td>
-                </tr>
-                <?php } ?>
-            </table>
-        </div>
+        <form method="post">
+
+            <?php if ($editMode) { ?>
+                <input type="hidden" name="id_barang" value="<?= $editData['id_barang']; ?>">
+            <?php } ?>
+
+            <label>Nama Barang</label>
+            <input type="text" name="nama_barang" required value="<?= $editMode ? $editData['nama_barang'] : '' ?>">
+
+            <label>Harga</label>
+            <input type="number" name="harga" required value="<?= $editMode ? $editData['harga'] : '' ?>">
+
+            <label>Stok Total</label>
+            <input type="number" name="stok" required value="<?= $editMode ? $editData['stok'] : '' ?>">
+
+            <label>Stok Ukuran S</label>
+            <input type="number" name="stok_ukuran_s" required value="<?= $editMode ? $editData['stok_ukuran_s'] : '' ?>">
+
+            <label>Stok Ukuran M</label>
+            <input type="number" name="stok_ukuran_m" required value="<?= $editMode ? $editData['stok_ukuran_m'] : '' ?>">
+
+            <label>Stok Ukuran L</label>
+            <input type="number" name="stok_ukuran_l" required value="<?= $editMode ? $editData['stok_ukuran_l'] : '' ?>">
+
+            <label>Stok Ukuran XL</label>
+            <input type="number" name="stok_ukuran_xl" required value="<?= $editMode ? $editData['stok_ukuran_xl'] : '' ?>">
+
+            <button type="submit" name="<?= $editMode ? 'update' : 'simpan' ?>">
+                <?= $editMode ? 'Update Data' : 'Simpan' ?>
+            </button>
+
+        </form>
     </div>
 
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+    <!-- DATA TABEL -->
+    <h2 style="text-align:center;">📋 Daftar Stok Barang</h2>
 
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "Poppins", sans-serif;
-    }
+    <table>
+        <tr>
+            <th>No</th>
+            <th>Nama Barang</th>
+            <th>Harga</th>
+            <th>Stok Total</th>
+            <th class="size">S</th>
+            <th class="size">M</th>
+            <th class="size">L</th>
+            <th class="size">XL</th>
+            <th>Aksi</th>
+        </tr>
 
-    body {
-        background: linear-gradient(135deg, #e0e7ff, #f3f4f6);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-height: 100vh;
-    }
+        <?php
+        $no = 1;
+        $data = mysqli_query($koneksi, "SELECT * FROM stok_barang ORDER BY id_barang DESC");
+        while ($d = mysqli_fetch_array($data)) {
+        ?>
+        <tr>
+            <td><?= $no++; ?></td>
+            <td><?= htmlspecialchars($d['nama_barang']); ?></td>
+            <td>Rp<?= number_format($d['harga']); ?></td>
+            <td><?= $d['stok']; ?></td>
+            <td class="size"><?= $d['stok_ukuran_s']; ?></td>
+            <td class="size"><?= $d['stok_ukuran_m']; ?></td>
+            <td class="size"><?= $d['stok_ukuran_l']; ?></td>
+            <td class="size"><?= $d['stok_ukuran_xl']; ?></td>
+            <td class="aksi">
+                <a class="edit" href="stok_barang.php?edit=<?= $d['id_barang']; ?>">Edit</a> |
+                <a class="hapus" href="stok_barang.php?hapus=<?= $d['id_barang']; ?>" onclick="return confirm('Hapus data ini?')">Hapus</a>
+            </td>
+        </tr>
+        <?php } ?>
 
-    .navbar {
-        width: 100%;
-        background: linear-gradient(90deg, #1e3a8a, #2563eb);
-        color: white;
-        text-align: center;
-        padding: 18px;
-        font-size: 24px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
+    </table>
 
-    .container {
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        gap: 30px;
-        margin-top: 50px;
-        width: 95%;
-        flex-wrap: wrap;
-    }
+</div>
 
-    .form-box {
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(8px);
-        padding: 25px;
-        width: 350px;
-        border-radius: 15px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-    }
-
-    .form-box:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-    }
-
-    h2 {
-        color: #1e3a8a;
-        margin-bottom: 20px;
-        text-align: center;
-    }
-
-    label {
-        font-weight: 600;
-        display: block;
-        margin-bottom: 6px;
-    }
-
-    input {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #cbd5e1;
-        border-radius: 8px;
-        background-color: #f9fafb;
-        font-size: 15px;
-        transition: 0.2s;
-    }
-
-    input:focus {
-        border-color: #2563eb;
-        box-shadow: 0 0 4px #2563eb80;
-        outline: none;
-    }
-
-    button {
-        background: #2563eb;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        width: 100%;
-    }
-
-    button:hover {
-        background: #1e40af;
-        transform: translateY(-2px);
-    }
-
-    table {
-        flex: 1;
-        border-collapse: collapse;
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        overflow: hidden;
-        min-width: 100%;
-        transition: 0.3s;
-    }
-
-    table:hover {
-        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-    }
-
-    th, td {
-        border: 1px solid #e5e7eb;
-        padding: 14px 10px;
-        text-align: center;
-        font-size: 15px;
-    }
-
-    th {
-        background: linear-gradient(90deg, #1e3a8a, #2563eb);
-        color: white;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    tr:nth-child(even) {
-        background-color: #f9fafb;
-    }
-
-    tr:hover {
-        background-color: #e0e7ff;
-        transition: 0.2s;
-    }
-
-    a.hapus {
-        color: #dc2626;
-        text-decoration: none;
-        font-weight: 600;
-    }
-
-    a.hapus:hover {
-        text-decoration: underline;
-    }
-
-    h2 + table {
-        margin-top: 10px;
-    }
-</style>
 </body>
 </html>

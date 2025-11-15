@@ -75,7 +75,7 @@ $namaBarang = [
     "Jas"
 ];
 
-$ukuran = ["S", "M", "L", "XL"];
+$ukuran = ["S (Lebar dada: 46–48 cm | Panjang baju: 65–67 cm | Panjang lengan: 19–21 cm | Lingkar dada: 92–96 cm)", "M (Lebar dada: 50–52 cm | Panjang baju: 68–70 cm | Panjang lengan: 20–22 cm | Lingkar dada: 100–104 cm)", "L (Lebar dada: 54–56 cm | Panjang baju: 71–73 cm | Panjang lengan: 21–23 cm | Lingkar dada: 108–112 cm)", "XL (Lebar dada: 58–60 cm | Panjang baju: 74–76 cm | Panjang lengan: 22–24 cm | Lingkar dada: 116–120 cm)"];
 
 $namaPelanggan = [
 "MOHAMAD QOIS AL QORNI","MOHAMMAD ALFINO ROSI","MOHAMMAD IKBAL",

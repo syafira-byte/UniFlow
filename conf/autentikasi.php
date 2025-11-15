@@ -3,7 +3,7 @@ session_start();
 include 'config.php'; // pastikan $koneksi didefinisikan di sini
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: ../index.php');
+    header('Location: ../login.php');
     exit;
 }
 
@@ -12,7 +12,7 @@ $password = $_POST['password'] ?? '';
 
 // cek kosong dulu
 if ($username === '' || $password === '') {
-    header('Location: ../index.php?error=2');
+    header('Location: ../login.php?error=2');
     exit;
 }
 
@@ -32,10 +32,10 @@ if ($result && $result->num_rows === 1) {
         header('Location: ../app/index.php');
         exit;
     } else {
-        header('Location: ../index.php?error=1');
+        header('Location: ../login.php?error=1');
         exit;
     }
 } else {
-    header('Location: ../index.php?error=1');
+    header('Location: ../login.php?error=1');
     exit;
 }

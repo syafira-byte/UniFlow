@@ -319,7 +319,10 @@ if (isset($_GET['hapus'])) {
                 <label>Ukuran Barang</label>
                 <select name="ukuran_barang" required>
                     <option value="">-Pilih Ukuran-</option>
-                    <option>S</option><option>M</option><option>L</option><option>XL</option>
+                    <option>S (Lebar dada: 46–48 cm | Panjang baju: 65–67 cm | Panjang lengan: 19–21 cm | Lingkar dada: 92–96 cm)</option>
+                    <option>M (Lebar dada: 50–52 cm | Panjang baju: 68–70 cm | Panjang lengan: 20–22 cm | Lingkar dada: 100–104 cm)</option>
+                    <option>L (Lebar dada: 54–56 cm | Panjang baju: 71–73 cm | Panjang lengan: 21–23 cm | Lingkar dada: 108–112 cm)</option>
+                    <option>XL (Lebar dada: 58–60 cm | Panjang baju: 74–76 cm | Panjang lengan: 22–24 cm | Lingkar dada: 116–120 cm)</option>
                 </select>
 
                 <input type="number" name="harga" placeholder="Harga" required>
